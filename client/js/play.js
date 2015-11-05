@@ -1,3 +1,9 @@
+/*
+ * Mark Kuczmarski
+ * File : play.js
+ * Purpose : This file handles the game logic of playing rock
+ *           paper scissors
+ */
 Player = new Mongo.Collection("player");
 
 var shoot = function (choice) {
@@ -99,19 +105,21 @@ Template.playerTemplate.events({
   }
 });
 
-
+//output a list of all of the possible opponents
 Template.play.helpers({
   opponents : function () {
     return Meteor.users.find({username : {$ne : Meteor.user().username}},{}).fetch();
   },
 });
 
+//get the current logged in user
 Template.main.helpers({
   currentUser : function () {
     return Meteor.user().username;
     }
   });
 
+  //displays if a user is playing a game
   Template.play.onCreated(function(){
     //alert the player if another opponent has started a game
     if(getGameRequest()) {
