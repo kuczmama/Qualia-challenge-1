@@ -1,11 +1,14 @@
 <template name="playerTemplate">
-  <h1>Rock Paper Scissors</h1>
   <div class="jumbotron">
+    <div>
       <!--Current Selection -->
-      <h1>Make a move!</h1>
+    <img id='status' width='50%' height='50%' src="rock_paper_scissors.png" />
+  </div>
+  <div>
       <!-- Input buttons -->
-    <button class="btn btn-default">Rock</button>
-    <button class="btn btn-default">Paper</button>
-    <button class="btn btn-default">Scissors</button>
+    <button class="btn btn-default" id="rock">Rock</button>
+    <button class="btn btn-default" id="paper">Paper</button>
+    <button class="btn btn-default" id="scissors">Scissors</button>
+  </div>
   </div>
 </template>

@@ -1,0 +1,12 @@
+<template name='play'>
+  <body>
+    Opponents
+      <select id="opponents" class="form-control">
+        {{#each opponent in opponents}}
+          <option class="list-group-item">{{opponent.username}}</option>
+        {{/each}}
+      </select>
+      <div class="page-header"></div>
+      {{> playerTemplate}}
+  </body>
+</template>

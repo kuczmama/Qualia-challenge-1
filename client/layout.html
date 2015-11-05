@@ -1,0 +1,43 @@
+<!-- The current layout -->
+<template name="main">
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+  <link href="cover.css" rel="stylesheet">
+
+  <div class="site-wrapper">
+
+    <div class="site-wrapper-inner">
+
+      <div class="cover-container">
+        <div class="masthead clearfix">
+          <div class="inner">
+            <h3 class="masthead-brand">Rock Paper Scissors</h3>
+            <nav>
+              <ul class="nav masthead-nav">
+                {{currentUser}}
+                {{#if currentUser}}
+                <li><a href="#" class="logout">Logout</a></li>
+                {{else}}
+                <li><a href="{{pathFor route='register'}}">Register</a></li>
+                <li><a href="{{pathFor route='login'}}">Login</a></li>
+                {{/if}}
+              </ul>
+            </nav>
+          </div>
+        </div>
+        <div class="inner cover">
+          {{> yield}}
+        </div>
+        <div class="mastfoot">
+          <div class="inner">
+            <hr>
+            <p>Copyright &copy; Mark Kuczmarski</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<template name="/">
+  <!-- Don't display anything initial login screen -->
+</template>
