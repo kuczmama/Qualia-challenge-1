@@ -1,39 +1,30 @@
 Player = new Mongo.Collection("player");
 
 var shoot = function (choice) {
-    alert('move made');
+    alert('move request made to opponent ' + document.getElementById('opponents').value);
     var sent = getSent();
-    if(hasGameRequest()){
-      alert("get Request" + getRequest());
+    if(getGameRequest()){
       displayImage(choice);
-      alert(determineOutcome(choice, getRequest()[2]));
+      alert(determineOutcome(choice, getGameRequest()[2]));
       reset();
       //play Game
     } else if (hasSentGameRequest()) {
-      alert('cannot make a new game... must finish game first');
+      alert('cannot make a new game... must finish game first with ' + getCurrentOpponent());
     } else {
         //send requests to other opponenet... src, dest, choice
       sent.push(Meteor.user().username + "," + document.getElementById('opponents').value + "," + choice);
       Session.set({
         send : sent
       })
+      displayImage(choice);
     }
   },
+  //reset the game after playing
   reset = function (){
-    Session.keys = {};
+    Session.keys = {};//reset the session
+    displayImage('default');//show default image
   },
-  getRequest = function () {
-    var i,
-        sent,
-        dest;
-    for(i = 0; i < getSent().length; i++) {
-      sent = getSent()[i].split(',');
-      dest = sent[1];
-      if(Meteor.user().username == dest) {
-        return sent;
-      }
-    }
-  },
+  //return the sent array
   getSent = function () {
     if(Session.get('send')) {
       return Session.get('send');
@@ -41,8 +32,11 @@ var shoot = function (choice) {
       return new Array();
     }
   },
-  //check if an opponent started a game
-  hasGameRequest = function () {
+  /*check if an opponent started a game.  If
+   * If it did return the game
+   * else return false
+   */
+  getGameRequest = function () {
     var i,
         sent,
         dest;
@@ -50,11 +44,16 @@ var shoot = function (choice) {
       sent = getSent()[i].split(',');
       dest = sent[1];
       if(Meteor.user().username == dest) {
-        return true;
+        return getSent()[i].split(',');
       }
     }
     return false;
   },
+  //gets the current opponent
+  getCurrentOpponent = function () {
+    return getGameRequest()[0];
+  },
+  //find if player has created a game with an opponent
   hasSentGameRequest = function () {
     var i,
         sent,
@@ -68,17 +67,19 @@ var shoot = function (choice) {
     }
     return false;
   },
+  //determine who won the game and return a status
   determineOutcome = function (choice, other) {
     if(choice === other) {
-      return 'tie';
+      return 'You tied with ' + getCurrentOpponent();
     } else if ((choice === 'rock' && other === 'paper') ||
                 (choice === 'paper' && other === 'scissors') ||
                 (choice === 'scissors' && other === 'rock')) {
-      return 'lose';
+      return 'You lost to ' + getCurrentOpponent();
     } else {
-      return 'win';
+      return 'You beat ' + getCurrentOpponent();
     }
   },
+  //change the image on the screen according the the status
   displayImage = function (status) {
     //update the image on the screen
     if(status == 'paper') {
@@ -108,5 +109,12 @@ Template.play.helpers({
 Template.main.helpers({
   currentUser : function () {
     return Meteor.user().username;
-  }
-});
+    }
+  });
+
+  Template.play.onCreated(function(){
+    //alert the player if another opponent has started a game
+    if(getGameRequest()) {
+      alert('You are playing a game with ' + getCurrentOpponent());
+    }
+  });
