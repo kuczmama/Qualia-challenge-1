@@ -13,8 +13,9 @@
             <h3 class="masthead-brand">Rock Paper Scissors</h3>
             <nav>
               <ul class="nav masthead-nav">
-                {{currentUser}}
                 {{#if currentUser}}
+                Hello, {{currentUser}}
+                <li><a href="/play">Play</a></li>
                 <li><a href="#" class="logout">Logout</a></li>
                 {{else}}
                 <li><a href="{{pathFor route='register'}}">Register</a></li>
