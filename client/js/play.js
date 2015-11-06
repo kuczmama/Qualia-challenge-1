@@ -4,11 +4,15 @@
  * Purpose : This file handles the game logic of playing rock
  *           paper scissors
  */
-Player = new Mongo.Collection("player");
+Game = new Mongo.Collection("game");
 
 var shoot = function (choice) {
-    alert('move request made to opponent ' + document.getElementById('opponents').value);
-    var sent = getSent();
+    if(getCurrentOpponent() != getSelectedOpponent()) {
+      alert('You must play against the player you are currently battling');
+      return;
+    }
+    alert('move request made to opponent ' + getSelectedOpponent());
+
     if(getGameRequest()){
       displayImage(choice);
       alert(determineOutcome(choice, getGameRequest()[2]));
@@ -17,61 +21,46 @@ var shoot = function (choice) {
     } else if (hasSentGameRequest()) {
       alert('cannot make a new game... must finish game first with ' + getCurrentOpponent());
     } else {
-        //send requests to other opponenet... src, dest, choice
-      sent.push(Meteor.user().username + "," + document.getElementById('opponents').value + "," + choice);
-      Session.set({
-        send : sent
-      })
+      //send requests to other opponenet... src, dest, choice
+      Game.insert({
+        source : Meteor.user().username,
+        destination : getSelectedOpponent(),
+        choice : choice
+      });
       displayImage(choice);
     }
   },
   //reset the game after playing
   reset = function (){
-    Session.keys = {};//reset the session
+    var id = getGameRequest()[0]._id;
+    Game.remove(id);
     displayImage('default');//show default image
   },
-  //return the sent array
-  getSent = function () {
-    if(Session.get('send')) {
-      return Session.get('send');
-    } else {
-      return new Array();
-    }
+  //get the selected opponent on the screen
+  getSelectedOpponent = function () {
+    return document.getElementById('opponents').value;
   },
   /*check if an opponent started a game.  If
    * If it did return the game
    * else return false
    */
   getGameRequest = function () {
-    var i,
-        sent,
-        dest;
-    for(i = 0; i < getSent().length; i++) {
-      sent = getSent()[i].split(',');
-      dest = sent[1];
-      if(Meteor.user().username == dest) {
-        return getSent()[i].split(',');
-      }
+    if(Meteor.user()) {
+      var request = Game.find({destination : Meteor.user().username}).fetch();
+      return request.length > 0 ? request : null;
+    } else {
+      return null;
     }
-    return false;
   },
   //gets the current opponent
   getCurrentOpponent = function () {
-    return getGameRequest()[0];
+    var request = getGameRequest();
+
+    return request ? request[0].source : null;
   },
   //find if player has created a game with an opponent
   hasSentGameRequest = function () {
-    var i,
-        sent,
-        src;
-    for(i = 0; i < getSent().length; i++) {
-      sent = getSent()[i].split(',');
-      src = sent[0];
-      if(Meteor.user().username == src) {
-        return true;
-      }
-    }
-    return false;
+    return Game.find({source : Meteor.user().username}).fetch().length > 0;
   },
   //determine who won the game and return a status
   determineOutcome = function (choice, other) {
@@ -98,6 +87,7 @@ var shoot = function (choice) {
       document.getElementById('status').src = 'rock_paper_scissors.png';
     }
   };
+  //run everytime a button is clicked
 Template.playerTemplate.events({
   "click" : function (event, template) {
     //handle the players choice
