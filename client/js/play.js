@@ -7,8 +7,12 @@
 Game = new Mongo.Collection("game");
 
 var shoot = function (choice) {
-    if(getCurrentOpponent() != getSelectedOpponent()) {
-      alert('You must play against the player you are currently battling');
+    if(getSelectedOpponent() == null) {
+      alert('Opponent cannot be null');
+      return;
+    }
+    if(getCurrentOpponent() != null && (getCurrentOpponent() != getSelectedOpponent())) {
+      alert('You must play against ' + getCurrentOpponent());
       return;
     }
     alert('move request made to opponent ' + getSelectedOpponent());
