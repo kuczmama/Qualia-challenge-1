@@ -1,4 +1,5 @@
 <template name='play'>
+  {{#if currentUser}}
   <body>
     Opponents
       <select id="opponents" class="form-control">
@@ -9,4 +10,7 @@
       <div class="page-header"></div>
       {{> playerTemplate}}
   </body>
+  {{else}}
+  Please Login to play.
+  {{/if}}
 </template>
